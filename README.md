@@ -169,9 +169,8 @@
   3. Genre
 - AFter selecting the title, artist or genre 
 - User types the new value
-- 
-#### Error Handling
 
+#### Error Handling
 - When picking a song:
   - if the number selected is greater than the number of items in the playlist, the user is re-asked for their input 
   - If the input is empty, the user is re-asked for their input 
@@ -182,4 +181,6 @@
   - If empty, the user is re-asked for their input
 - When picking which part of the entry they want to change (title, artist or genre), each one has a index value (1, 2 or 3)
   - User must select a valid number (1, 2 or 3), if not the menu is re-shown and their input will be re-asked for 
-- 
+- Once the title, artist or genre is selected the user is asked for the new value
+  - If the value is empty the user is re-asked for the value
+  - If is valid, the song, selector (title, artist or genre), and value are updated

@@ -645,6 +645,4 @@ def validate_change( page, item = '' ):
                 print("Invalid choice. Please try again.")
                 validate_change( page )
 
-
-
 init()
