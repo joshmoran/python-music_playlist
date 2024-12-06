@@ -32,13 +32,19 @@ playlist = [
     }
 ]
 
+def init():
+    print("")
+    print("Hello and welcome to your 'music playlist'")
+    print("You can view, search, add, remove, or edit songs in your playlist")
+    menu()
+
 
 def menu():
     print("")
     print("Please choose from one of the following")
     print("")
-    print("1. View the playlist")
-    print("2. Make a change to the playlist")
+    print("1. View and search")
+    print("2. Make a change ")
     print("3. Exit")
     print("")
     validate_menu()
@@ -81,6 +87,7 @@ def validate_menu():
             elif user_choice == 3:
                 print("Thank you for using 'Music Playlist'")
                 has_validated = True
+                exit()
             else:
                 print("Invalid choice. Please try again.")
                 validate_menu()
@@ -98,9 +105,9 @@ def validate_change_menu():
             if user_choice == 1:
                 add_song()
             elif user_choice == 2:
-                remove_song()
+                change_song( 'remove' )
             elif user_choice == 3:
-                edit_song()
+                change_song( 'edit' )
             elif user_choice == 4:
                 menu()
             else:
@@ -163,7 +170,6 @@ def search_by ( type ):
     print("")
     for song in playlist:
         if user_genre == song[search_by].lower():
-
             song_array[ index_val ] = ( song['title'],  song['artist'],  song['genre'])
             index_val += 1
         else: 
@@ -208,6 +214,28 @@ def validate_search( type ):
                 print("Invalid choice. Please try again.")
                 validate_search ( type )
 
+def validate_changes( ):
+    validated = False
+
+    while not validated:
+        user_choice = input(">>> ")
+
+        match user_choice:
+            case "1":
+                validated = True
+                add_song()
+            case "2":
+                validated = True
+                remove_song()
+            case "3":
+                validated = True
+                change_song( 'edit' )
+            case "4":
+                validated = True
+                menu()
+            case _:
+                print("Invalid choice. Please try again.")
+                validate_changes()
 
 def add_song():
     print("")
@@ -217,7 +245,6 @@ def add_song():
     print("1. Title of the song")
     print("2. Artist of the song")
     print("3. Genre of the song")
-    print("")
     validate_add_song()
 
 def validate_add_song():
@@ -270,18 +297,17 @@ def validate_add_song():
     print("")
     print("Is this correct?")
     print("")
-    print("1. Yes")
-    print("2. No")
-    print("")
+    print("Y. Yes")
+    print("N. No")
     while not user_happy:
         print("")
-        user_choice = input(">>> ")
+        user_choice = input(">>> ").lower()
 
         match user_choice:
-            case "1":
+            case "y":
                 user_happy = True
                 submit_song(final_title, final_artist, final_genre)
-            case "2":
+            case "n":
                 user_happy = True
                 print("")
                 print("Okay, we will go through again")
@@ -289,9 +315,6 @@ def validate_add_song():
                 validate_add_song()
             case _:
                 print("Invalid choice. Please try again.")
-
-
-   
 
 def submit_song( title, artist, genre):
 
@@ -302,38 +325,293 @@ def submit_song( title, artist, genre):
         print(f"An error occurred: {str(e)}")
     menu_change()
 
-def remove_song():
-    print("")
-    print("Removing a song from the playlist")
-    print("")
-    print("In order to remove an entry from the playlist, we will need search it either of 3 things")
-    print("1. Title of the song")
-    print("2. Artist of the song")
-    print("3. Genre of the song")
-    print("")
-    validate_remove()
-
-def remove_by( type ):
+def change_song( page ):
     global playlist
+    index_no = 1
+    print("")
+    if page == 'remove':
+        print("So, we are:")
+        print("Removing a song from the playlist")
+        print("")
+        print("Please choose one of the following:")
+        print("1. Title")
+        print("2. Artist")
+        print("3. Genre")
+        print("")
+        validate_change( page )
+    elif page == 'edit':
+        print("So, we are:")
+        print("Editing a song in the playlist")
+        print("")
+        print("Before we can edit a song, which entry do you want to change? ")
+        print("")
+        print(f"Index - Title - Artist - Genre")
+        for song in playlist:
+            print(f"{index_no}: {song['title']} - {song['artist']} - {song['genre']}")
+            index_no = index_no + 1 
+        print("")
+        print("Which song do you want to edit?")
+        print("")
+        validate_change_song()
 
-    print("")
-    print(f"Please enter the name of the {type}to remove")
-    print("")
-    user_input = input(">>> ").lower()
-    
-    for song in playlist:
-        if user_input == song[type].lower():
-            playlist.remove(song)
-            print(f"Song '{song[type]}' has been removed from the playlist.")
-            validated = True
+def validate_change_song():
+    global playlist 
+
+    try:
+        user_input = int( input(">>> ") )
+        if user_input <= len(playlist):
+            print("")
+            selected_song = playlist[int(user_input) - 1]
+            print(f"You have chosen: {selected_song['title']} - {selected_song['artist']} - {selected_song['genre']}")
+            print("")
+            print("Is this correct?")
+            print("")
+            print("Y: Yes")
+            print("N: No")
+            validate_edit( selected_song )
         else:
             print("")
-            print(f"We found no {type} with the name of {user_input}")
-            print("")
-            print("Lets try that again")
-            remove_by( type )
+            print("Invalid choice. Please enter a valid index.")
+            validate_change_song()
+    except ValueError:
+        print("")
 
-def validate_remove(): 
+def validate_edit( selected_song = '' ):
+    validated = False 
+
+    while not validated:
+        print("")
+        user_choice = input(">>> ").lower()
+        print(f"The user selected {user_choice}")
+        match user_choice:
+            case "y":
+                validated = True
+                print("")
+                print("Okay we will edit this song entry")
+                print("")
+                print("Okay, which part do you want to change? ")
+                print("")
+                print("1. Title")
+                print("2. Artist")
+                print("3. Genre")
+                print("")
+                validate_change( 'edit', selected_song )
+            case "n":
+                print("You selected no")
+                print("")
+                print("Lets try this again")
+                validated = True
+                change_song( 'edit' )
+            case _:
+                print("Invalid choice. Please try again.")
+                validate_edit( selected_song )
+        
+
+def make_edit_song( item, song, user_choice ):
+    global playlist 
+
+    found = False
+    index_el = 0
+
+    for key, value in song.items():
+        if key == item:
+            key_to_change = value
+    for entry in playlist:
+        for key, value in entry.items():
+            if value == key_to_change:
+                print("")
+                playlist[index_el][item] =  user_choice
+                print(f"Successfully changed the {item} to {user_choice}")
+                found = True
+                after_change( 'edit' )
+        index_el += 1
+
+    if found == False:
+        print(f"No songs found with the name of {user_input}")
+        after_change(page )
+
+def validate_make_edit( field, song ):
+    validated = False 
+
+    while not validated:
+        print(f"Please enter the new {field}")
+        user_choice = input(">>> ")
+        print("")
+        print(f"The user selected {user_choice}")
+        if user_choice == '':
+            print("The new {field} must not be empty")
+            validated = True
+            validate_make_edit( field, song )
+        else:
+            make_edit_song( field, song, user_choice )
+
+def edit_by( type, page ):
+    global playlist
+    found_items = []
+    validated = False
+
+    if page == 'remove':
+        print(f"Please enter the name of the {type} to remove")
+    elif page == 'edit':
+            print(f"Please enter the name of the {type} to edit")
+    print("")
+    user_input = input(">>> ").lower()
+    print("")
+    index_val = 0
+
+    for song in playlist:
+        if user_input in song[type].lower() :
+            found_items.append(song)
+            index_val += 1
+
+    if len(found_items) == 0:
+        print(f"No songs found with the name of {user_input}")
+        after_change( page )
+    elif len(found_items) == 1:
+        print(f"Okay, we have found 1 entry matching the {type} and name of {user_input}")
+        print("")
+
+        print(f"{found_items[0]['title']} - {found_items[0]['artist']} - {found_items[0]['genre']}")
+
+        print("")
+        print("Is this correct?, please confirm:")
+        print("")
+        print("Y. Yes")
+        print("N. No")
+        print("")
+        confirmed = False
+        while not confirmed:
+            confirm_delete = input(">>> ").lower()
+
+            match confirm_delete:
+                case "y":
+                    try:
+                        confirmed = True
+                        index_val = 0
+                        print("this should be running")
+                        index_val = 0
+                        for song in playlist:
+
+                            if found_items[0] == song:
+                                print( page )
+                                if page == 'edit':
+                                    print("To change a song")
+                                elif page == 'remove':
+                                    print(f"So we have dropped {found_items[0]}")
+                                    del playlist[ index_val ] 
+                            index_val += 1 
+
+                                
+                    except:
+                        print("An error has occurred, could not remove the song")
+                    finally:
+                        after_change( page )
+                case "n":
+                    confirmed = True
+                    print("")
+                    print("Okay, we will go through again")
+                    print("")
+                    print(f"What is the name of the {type} you want to remove?")
+                    print("")
+                    validate_change( 'remove' )
+                case _: 
+                    print("Invalid choice. Please try again.")
+    else:   
+        confirm_change( found_items, page)
+
+def confirm_change( array, page ):
+    index_val = 1
+
+    print(f"Okay we have found songs to {page}")
+    print("")
+    print("Here are the songs:")
+    for item in array:
+        print(f"{index_val}: {item['title']} - {item['artist']} - {item['genre']}")
+        index_val += 1 
+    if page == 'edit':
+        print(f"{index_val}: Cancel Editing and Return to the Main Menu ")
+    elif page =='remove':
+        print(f"{index_val}: Cancel Delete and Return to the Main Menu ")
+    print("")
+    validate_batch( array, page )
+
+
+def validate_batch( array, page ):
+    global playlist 
+
+    validated = False
+
+    print("Please enter a number to continue ")
+    while not validated:
+        try:
+            user_choice = int( input(">>> ") )
+            
+            if user_choice == len(array) + 1:
+                print("")
+                print("Okay, we will go back to the main menu")
+                print("")
+                menu()
+            elif user_choice  in range(1, len(array) + 1 ):
+                validated = True
+                confirm_batch( array[user_choice - 1 ], page )
+            else: 
+                print("Invalid choice. Please enter a number between 1 and", ( len(array) + 1 ))
+                print("")
+                validate_batch( array, page )
+        except ValueError:
+            print("It must be an integer")
+
+def confirm_batch( to_delete, page ):
+    global playlist
+
+    index_val = 0 
+
+    if page == 'remove':
+        for song in playlist:
+            if song['title'] == to_delete['title'] or song['artist'] == to_delete['artist'] or song['genre'] == to_delete['genre']:
+                del playlist[index_val]
+                print(f"Song '{to_delete['title']}' by '{to_delete['artist']}' removed successfully.")
+            index_val += 1
+    after_change( page )
+
+def after_change( page):
+    print("")
+    print("Here are your options: ")
+    print("")
+    if page == 'remove':
+        print("1. Delete another song")
+    elif page == 'edit':
+        print("1. Edit another song")
+    print("2. Go to change menu")
+    print("3. Go to main menu")
+    print("")
+    while True:
+        user_choice = input(">>> ").lower()
+
+        match user_choice:
+            case "1":
+                print("")
+                if page == 'remove':
+                    print("Okay, we will delete the song")
+                elif page == 'edit':
+                    print("Okay, we will edit the song")
+                print("")
+                change_song( page )
+            case "2":
+                print("")
+                print("Okay, we will go to the change menu")
+                print("")
+                menu_change()
+            case "3":
+                print("")
+                print("Okay, we will go back to the main menu")
+                print("")
+                menu()
+            case _:
+                print("Invalid choice. Please try again.")
+                after_change( page )
+            
+def validate_change( page, item = '' ): 
     validated = False
     while not validated:
         user_choice = input(">>> ")
@@ -341,21 +619,38 @@ def validate_remove():
         match user_choice:
             case "1":
                 validated = True
-                remove_by( 'title ')
+                print("")
+                if page == 'edit' :
+                    print("You have chosen to edit the title")
+                    print("")
+                    validate_make_edit( 'title', item )
+                elif page == 'remove':
+                    edit_by( 'title', page )
             case "2":
                 validated = True
-                remove_by( 'artist' )
+                print("")
+                if page == 'edit':
+                    print("")
+                    print("You have chosen to edit the artist")
+                    print("")
+                    validate_make_edit( 'artist', item )
+                elif page == 'remove':
+                    edit_by( 'artist', page )
             case "3":
                 validated = True
-                remove_by( 'genre' )
+                print("")
+                # if array ==
+                if page == 'edit':
+                    print("")
+                    print("You have chosen to edit the genre")
+                    print("")
+                    validate_make_edit( 'genre', item )
+                elif page == 'remove':
+                    edit_by( 'genre', page )
             case _:
                 print("Invalid choice. Please try again.")
-                validate_remove()
-
-def edit_song():
-    print("Edit Song")
+                validate_change( page )
 
 
 
-remove_song()
-# menu_view() 
+init()
