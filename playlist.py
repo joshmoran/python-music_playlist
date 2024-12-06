@@ -160,7 +160,7 @@ def search_by ( type ):
     has_validated = False
     has_results = False
     index_val = 0
-    song_array = {}
+    song_array = []
 
     print("")
     print(f"Enter a {search_by}: ")
@@ -169,22 +169,19 @@ def search_by ( type ):
     print(f"Your chosen {search_by} is {user_genre}")
     print("")
     for song in playlist:
-        if user_genre == song[search_by].lower():
-            song_array[ index_val ] = ( song['title'],  song['artist'],  song['genre'])
+        if user_genre in song[search_by].lower():
+            song_array.append({ 'title': song['title'], 'artist': song['artist'], 'genre': song['genre'] })
             index_val += 1
         else: 
             has_results = True
     if len(song_array) == 0:
-        if search_by == 'artist':
-            print(f"No songs found by this artist.")
-        elif search_by == 'genre':
-            print(f"No songs found in this genre.")
+        print(f"No songs found by this {search_by}.")
     else:
         print(f"Songs found in this {search_by}:")
         print("")
         print(" --- Title --- Artist --- Genre --- ")
-        for song in song_array.values():
-            print(f"{song[0]} - {song[1]} - {song[2]}")
+        for song in song_array:
+            print(f"{song['title']} - {song['artist']} - {song['genre']}")
     print("")
     print(f"Do you want to search for another {search_by} or go back to the main menu?")
     print("")
@@ -488,20 +485,17 @@ def edit_by( type, page ):
                     try:
                         confirmed = True
                         index_val = 0
-                        print("this should be running")
                         index_val = 0
                         for song in playlist:
 
                             if found_items[0] == song:
-                                print( page )
                                 if page == 'edit':
                                     print("To change a song")
                                 elif page == 'remove':
-                                    print(f"So we have dropped {found_items[0]}")
+                                    print("")
+                                    print(f"So we have dropped: {found_items[0]['title']} - {found_items[0]['artist']} - {found_items[0]['genre']}")
                                     del playlist[ index_val ] 
-                            index_val += 1 
-
-                                
+                            index_val += 1      
                     except:
                         print("An error has occurred, could not remove the song")
                     finally:
@@ -513,7 +507,7 @@ def edit_by( type, page ):
                     print("")
                     print(f"What is the name of the {type} you want to remove?")
                     print("")
-                    validate_change( 'remove' )
+                    change_song( 'remove' )
                 case _: 
                     print("Invalid choice. Please try again.")
     else:   

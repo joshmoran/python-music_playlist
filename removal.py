@@ -37,7 +37,16 @@ create =  {'title': 'With Hearts Towards None', 'artist': 'Mgla', 'genre': 'Blac
 
 # create =  {'title': 'With Hearts Towards None', 'artist': 'Mgla', 'genre': 'Black Metal'}
 index_el = 0
+for song in playlist:
+    
+    for key, value in song.items():
+        if value == 'Angela of Death':
+            print("matches:")
+            playlist[index_el]['title'] =  'sonething something' 
 
+            print(f"{key} - {value}")
+
+    index_el += 1
     # if song['title'] == 'Angel of Death':
     #     song.update['title']
 
